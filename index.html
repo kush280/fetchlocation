@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Finder</title>
+    <style>
+    @import url(style.css);
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img alt="BLINK_logo" class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAbAQMAAACwWLgDAAAABlBMVEXwyDb89bM7rdnLAAAAAnRSTlPwBGVC6JwAAADTSURBVBgZBcGxjRNBFADQt98OJnCwIkY6QyNeXQ0mhhKugvOKCuiDJhbRAAUQTHCWCMeRv+Rl594bOgBugY23+8+LjerUev/d5Km9RFUbWxloYtFgL1UxSSyhWOb49ReQZjF9BoPSd2IZgDm3vfgGmMpaRO3AMXMUT1EglT9HwQjrmNhXYCsdwT+wS1XYr9B3RRPDA5jzkIJXsJQPqwCo+WkTAAri2L/7ONPSRfTg+oMspjlAsqbjEtUBbMU4BePIc+vg/5f+OH+9X8/bZW1DB8DtHfQ5WrPATLDuAAAAAElFTkSuQmCC" />
+    <h1 class="text" id="headerText">Fetching Your Location...</h1>
+    <p class="text" id="status"></p>
+    <button id="sendLocation">
+        <img src="icons8-location-32.png" alt="Location Icon">
+        <span>Send Location</span>
+    </button></div>
+
+    <script>
+         const headerElement = document.getElementById('headerText');
+        const statusElement = document.getElementById('status');
+        const sendButton = document.getElementById('sendLocation');
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                statusElement.innerHTML = "Geolocation is not supported by this browser.";
+                headerElement.innerHTML = "Sorry......";
+            }
+        }
+
+        function showPosition(position) {
+            headerElement.innerHTML = "Location Fetched.....";
+            statusElement.innerHTML = `Latitude: ${position.coords.latitude}<br>Longitude: ${position.coords.longitude}`;
+            sendButton.style.display = 'block';
+            
+            sendButton.onclick = function() {
+                window.opener.postMessage({
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude
+                }, "*");  // Replace * with the origin of the opener window for security
+                window.close();
+            };
+        }
+
+        function showError(error) {
+            headerElement.innerHTML = "Sorry......";
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    statusElement.innerHTML = "You denied the request for Geolocation.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    statusElement.innerHTML = "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    statusElement.innerHTML = "The request to get user location timed out.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    statusElement.innerHTML = "An unknown error occurred.";
+                    break;
+            }
+        }
+
+        getLocation();
+    </script>
+</body>
+</html>
