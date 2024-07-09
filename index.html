@@ -40,19 +40,13 @@
     sendButton.style.display = 'block';
     
     sendButton.onclick = function() {
-        if (window.opener) {
-            window.opener.postMessage({
-                lat: lat,
-                lon: lon
-            }, "*");
-        } else {
-            console.error("window.opener is not available");
-            // Fallback: store in localStorage
-            localStorage.setItem('lat', lat);
-            localStorage.setItem('lon', lon);
-        }
-        window.close();
+    const data = {
+        lat: lat,
+        lon: lon
     };
+    localStorage.setItem('locationData', JSON.stringify(data));
+    window.close();
+};
 }
 
         function showError(error) {
